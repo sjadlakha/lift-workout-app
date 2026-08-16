@@ -84,10 +84,36 @@ summary{padding:15px;font-weight:900;font-size:13px;cursor:pointer}
 .footer{padding:22px 6px;color:#707b88;font-size:11px;line-height:1.5}
 @media(min-width:700px){.card{flex-basis:680px}.screen{padding:0 18px}.nav{padding-left:18px;padding-right:18px}}
 </style>
-</head>
+<style>
+.v2page{padding:16px 4px}.v2page h2{font-size:27px;margin:0 0 5px}.v2sub{font-size:12px;color:var(--muted);margin-bottom:13px}
+.v2stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.v2stat{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px}.v2stat b{display:block;font-size:25px}.v2stat span{font-size:11px;color:var(--muted)}
+.v2panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:10px}.v2panel h3{font-size:15px;margin:0 0 10px}
+.v2row{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:12px;margin:7px 0;display:flex;justify-content:space-between;align-items:center}.v2row b{font-size:13px}.v2row span{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.v2exercise{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:12px;margin:7px 0;width:100%;text-align:left}.v2exercise b{font-size:13px}.v2exercise div{font-size:11px;color:var(--muted);margin-top:4px}
+.v2calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.v2monthbtn{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 10px}.v2month{font-weight:900}
+.v2dow,.v2heat{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.v2dow span{font-size:9px;color:var(--muted);text-align:center}.v2heat{margin-top:5px}
+.v2day{aspect-ratio:1;border-radius:7px;background:#171c22;border:1px solid #232a33;display:flex;align-items:center;justify-content:center;font-size:9px;color:#7f8995}.v2day.today{outline:2px solid #e8edf2;outline-offset:1px}
+.v2day.push{background:#5fb8ff;color:#071017}.v2day.pull{background:#66d9a5;color:#06140e}.v2day.legs{background:#ffad5c;color:#1b1005}.v2day.arms{background:#b18cff;color:#120b20}
+.v2legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:10px;color:var(--muted)}.v2key{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.v2btn{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:850;font-size:12px}.v2primary{background:var(--text);color:#090b0f}
+.v2bar{height:7px;background:#242a32;border-radius:99px;overflow:hidden;margin-top:6px}.v2bar i{display:block;height:100%;border-radius:99px}
+</style><style>
+.menuBtn{position:absolute;right:14px;top:calc(15px + env(safe-area-inset-top));z-index:60;width:44px;height:44px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:22px;line-height:1}
+.header{position:relative}
+.liftMenu{position:absolute;right:14px;top:calc(65px + env(safe-area-inset-top));z-index:59;width:190px;padding:7px;background:rgba(17,21,27,.98);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.45);display:none}
+.liftMenu.show{display:grid;gap:5px}
+.liftMenu button{border:0;background:var(--surface2);border-radius:11px;padding:11px 12px;text-align:left;color:var(--text);font-size:12px;font-weight:850}
+.liftMenu button:active{background:var(--surface3)}
+</style></head>
 <body>
 <div class="app">
 <header class="header">
+ <button id="menuBtn" class="menuBtn" aria-label="Open menu" onclick="toggleLiftMenu()">☰</button>
+ <div id="liftMenu" class="liftMenu" aria-hidden="true">
+   <button data-menu="progress">📈 <span>Progress</span></button>
+   <button data-menu="calendar">📅 <span>Calendar</span></button>
+   <button data-menu="data">💾 <span>Data & Backup</span></button>
+ </div>
  <div class="kicker">LIFT · 4 DAY PROGRAM</div>
  <h1>Train. Log. Progress.</h1>
  <div class="sub">Swipe through each exercise. Log your sets, use the rest timer, and keep the same plan for 6–8 weeks before changing it.</div>
@@ -109,6 +135,12 @@ summary{padding:15px;font-weight:900;font-size:13px;cursor:pointer}
 <section id="legs" class="screen"></section>
 <section id="arms" class="screen"></section>
 <section id="home" class="screen"></section>
+<section id="progress" class="screen"></section>
+<section id="calendar" class="screen"></section>
+<section id="data" class="screen"></section>
+<div id="v2modal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.72);align-items:flex-end">
+<div id="v2sheet" style="width:100%;max-height:86vh;overflow:auto;background:#11151b;border:1px solid #39424e;border-radius:24px 24px 0 0;padding:18px 16px 30px"></div>
+</div>
 </main>
 
 <div class="timer" id="timer">
@@ -118,11 +150,7 @@ summary{padding:15px;font-weight:900;font-size:13px;cursor:pointer}
  </div>
 </div>
 
-<nav class="bottom"><div class="bottomrow">
- <button class="active" data-bottom="push">🏋️<br>Workout</button>
- <button data-bottom="home">📖<br>Guide</button>
- <button data-bottom="reset">↻<br>Reset logs</button>
-</div></nav>
+
 </div>
 
 <script>
@@ -170,7 +198,7 @@ arms:{title:"Arms + Core",sub:"Biceps · Triceps · Abs",time:"55–70 min",warm
 function keyFor(day,i,field){return "lift-"+day+"-"+i+"-"+field}
 function renderDay(day){
  const d=data[day], el=document.getElementById(day);
- el.innerHTML=`<div class="dayhead"><div><h2>${d.title}</h2><p>${d.sub} · ${d.time}</p></div><button class="start" onclick="scrollToExercise('${day}',0)">Start →</button></div>
+ el.innerHTML=`<div class="dayhead"><div><h2>${d.title}</h2><p>${d.sub} · ${d.time}</p></div><button class="start" onclick="scrollToExercise('${day}',0)">Start →</button></div><div id="${day}-pending" style="display:none;background:#21171a;border:1px solid #57313a;border-radius:16px;padding:12px;margin:0 0 10px;font-size:12px"></div>
  <div class="progress"><i id="${day}-bar"></i></div>
  <details class="warmup" open><summary>🔥 WARM-UP · DO THIS BEFORE EXERCISES</summary><div class="inside">
  ${d.warm.map((x,i)=>`<label class="check"><input type="checkbox" data-check="${keyFor(day,'warmup',i)}"><span>${x}</span></label>`).join("")}
@@ -189,7 +217,7 @@ function renderDay(day){
   </div>
  </article>`).join("")}</div>
  <div class="controls"><button class="ctrl prev">← Prev</button><span class="counter" id="${day}-counter">1 / ${d.ex.length}</span><button class="ctrl next">Next →</button></div>
- <div class="actions"><button class="action primary" onclick="startTimerFrom('${day}')">⏱ Start 90s rest</button><button class="action" onclick="clearDay('${day}')">Clear this day</button></div>
+ <div class="actions"><button class="action primary" onclick="startTimerFrom('${day}')">⏱ Start 90s rest</button><button class="action" onclick="clearDay('${day}')">Clear this day</button></div><button class="action" style="width:100%;margin:0 0 10px;background:#18382d;border-color:#3c6656" onclick="liftFinishWorkout('${day}')">✅ Finish Workout & Save Progress</button>
  <details class="cooldown" open><summary>🧘 COOL-DOWN · DO THIS AFTER WORKOUT</summary><div class="inside">
  <p style="margin-top:0;color:#dce2e9">Spend about 8–12 minutes here. Let your breathing settle, then use relaxed static stretches and mobility. Never force a painful range.</p>
  <ul>${d.stretch.map(x=>`<li>${x}</li>`).join("")}</ul>
@@ -224,16 +252,35 @@ function clearDay(day){
 }
 Object.keys(data).forEach(renderDay);
 
-document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>show(b.dataset.day));
-document.querySelectorAll("[data-bottom]").forEach(b=>b.onclick=()=>{
- if(b.dataset.bottom==="reset"){if(confirm("Clear ALL workout logs and checks?")){Object.keys(localStorage).filter(k=>k.startsWith("lift-")).forEach(k=>localStorage.removeItem(k));location.reload()}return}
- show(b.dataset.bottom);
+
+function toggleLiftMenu(){
+ const menu=document.getElementById("liftMenu");
+ if(!menu)return;
+ const open=menu.classList.toggle("show");
+ menu.setAttribute("aria-hidden",open?"false":"true");
+}
+document.querySelectorAll("[data-menu]").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+   const page=btn.dataset.menu;
+   const menu=document.getElementById("liftMenu");
+   menu?.classList.remove("show");
+   menu?.setAttribute("aria-hidden","true");
+   show(page);
+ });
 });
+document.addEventListener("click",e=>{
+ const menu=document.getElementById("liftMenu"),button=document.getElementById("menuBtn");
+ if(menu?.classList.contains("show") && !menu.contains(e.target) && e.target!==button){
+   menu.classList.remove("show");
+   menu.setAttribute("aria-hidden","true");
+ }
+});
+
+document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>show(b.dataset.day));
 function show(day){
  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
  document.getElementById(day).classList.add("active");
  document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b.dataset.day===day));
- document.querySelectorAll(".bottom button").forEach(b=>b.classList.toggle("active",b.dataset.bottom===day));
  window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -258,6 +305,208 @@ document.getElementById("home").innerHTML=`<div class="home"><div class="homecar
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+
+/* ===== Lift v2: persistent history, progress, calendar, pending workouts, export/import ===== */
+const LIFT_DB_NAME="LiftTrackerV2",LIFT_DB_VERSION=2;
+let liftDB=null,liftCalendarMonth=new Date();
+
+function liftOpenDB(){
+ return new Promise((resolve,reject)=>{
+  const r=indexedDB.open(LIFT_DB_NAME,LIFT_DB_VERSION);
+  r.onupgradeneeded=e=>{
+   const d=e.target.result;
+   if(!d.objectStoreNames.contains("sessions")){
+    const st=d.createObjectStore("sessions",{keyPath:"id"});st.createIndex("completedDate","completedDate");st.createIndex("type","type");
+   }
+   if(!d.objectStoreNames.contains("sets")){
+    const st=d.createObjectStore("sets",{keyPath:"id"});st.createIndex("sessionId","sessionId");st.createIndex("exerciseId","exerciseId");st.createIndex("date","date");
+   }
+   if(!d.objectStoreNames.contains("settings")){
+    d.createObjectStore("settings",{keyPath:"key"});
+   }
+  };
+  r.onsuccess=()=>{liftDB=r.result;resolve(r.result)};r.onerror=()=>reject(r.error);
+ });
+}
+const liftStore=(n,m="readonly")=>liftDB.transaction(n,m).objectStore(n);
+const liftReq=r=>new Promise((a,b)=>{r.onsuccess=()=>a(r.result);r.onerror=()=>b(r.error)});
+const liftAll=n=>liftReq(liftStore(n).getAll());
+const liftPut=(n,x)=>liftReq(liftStore(n,"readwrite").put(x));
+const liftId=p=>p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+const liftISO=d=>d.toISOString().slice(0,10);
+const liftToday=()=>liftISO(new Date());
+const liftFmt=d=>new Date(d+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+const liftExId=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
+
+async function liftGetSetting(key){
+ const r=liftStore("settings").get(key); return liftReq(r);
+}
+async function liftSetSetting(key,value){
+ return liftReq(liftStore("settings","readwrite").put({key,value}));
+}
+async function liftTrackingStart(){
+ let x=await liftGetSetting("trackingStart");
+ if(x?.value)return x.value;
+ const start=liftToday();
+ await liftSetSetting("trackingStart",start);
+ return start;
+}
+
+/* Your four-day split schedule. Monday Push, Tuesday Pull, Thursday Legs, Saturday Arms + Core. */
+const liftSchedule={1:"push",2:"pull",4:"legs",6:"arms"};
+
+function liftDateAdd(date,n){const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+n);return liftISO(d)}
+async function liftPlannedDatesBack(days=90){
+ const out=[],today=liftToday(),start=await liftTrackingStart();
+ for(let i=0;i<=days;i++){
+   const d=liftDateAdd(today,-i);
+   if(d<start)continue; // never invent "missed" workouts from before this app started tracking
+   const dow=new Date(d+"T12:00:00").getDay();
+   if(liftSchedule[dow])out.push({date:d,type:liftSchedule[dow]});
+ }
+ return out;
+}
+async function liftPending(){
+ const sessions=await liftAll("sessions");
+ const completedScheduled=new Set(sessions.map(x=>x.scheduledDate));
+ return (await liftPlannedDatesBack(90))
+   .filter(x=>!completedScheduled.has(x.date) && x.date<liftToday())
+   .sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+async function liftFinishWorkout(day){
+ const w=data[day],completedDate=liftToday(),pending=(await liftPending()).find(x=>x.type===day);
+ const sessionId=liftId("session"),sets=[];
+ w.ex.forEach((e,i)=>{
+  [1,2,3].forEach(setNo=>{
+   const val=f=>document.querySelector(`#${day} input[data-k="${keyFor(day,i,f+setNo)}"]`)?.value||"";
+   const weight=val("w"),reps=val("r"),rir=val("i");
+   if(weight||reps||rir)sets.push({id:liftId("set"),sessionId,exerciseId:liftExId(e[0]),exerciseName:e[0],date:completedDate,day,set:setNo,weight:+weight||0,reps:+reps||0,rir:+rir||0});
+  });
+ });
+ if(!sets.length && !confirm("No sets are logged. Finish this workout anyway?"))return;
+ await liftPut("sessions",{id:sessionId,type:day,scheduledDate:pending?.date||completedDate,completedDate,status:"completed",setCount:sets.length});
+ for(const x of sets)await liftPut("sets",x);
+ alert(`${w.title} completed ✓\n${sets.length} logged sets saved.`);
+ await liftRefresh();
+}
+
+async function liftLastForExercise(name){
+ const sets=(await liftAll("sets")).filter(x=>x.exerciseName===name).sort((a,b)=>b.date.localeCompare(a.date)||b.set-a.set);
+ if(!sets.length)return null;const date=sets[0].date;return sets.filter(x=>x.date===date).sort((a,b)=>a.set-b.set);
+}
+
+async function liftRefreshSuggestions(){
+ for(const day of Object.keys(data)){
+  data[day].ex.forEach(async(e,i)=>{
+   const last=await liftLastForExercise(e[0]);if(!last)return;
+   const existing=document.querySelector(`#${day} .card:nth-child(${i+1}) .setlog`);
+   if(!existing)return;
+   let note=existing.querySelector(".v2suggest");if(!note){note=document.createElement("div");note.className="v2suggest";note.style.cssText="font-size:11px;color:var(--muted);margin-top:8px";existing.appendChild(note)}
+   const nums=(last||[]).map(x=>x.reps||0),range=e[1].match(/\d+\s*[–-]\s*\d+/)?.[0]||"";
+   const max=+(range.match(/\d+$/)||[0])[0];
+   const hit=max>0&&nums.length>0&&nums.every(n=>n>=max);
+   note.innerHTML=hit&&last[0]?.weight?`🎯 <strong>Last: ${last.map(x=>`${x.weight}kg × ${x.reps}`).join(" · ")}</strong> — you hit the top of the range. Try a small increase if form/RIR were good.`:`Last: ${last.map(x=>`${x.weight}kg × ${x.reps} @ ${x.rir} RIR`).join(" · ")}`;
+  });
+ }
+}
+
+async function liftRenderPending(){
+ const p=await liftPending();
+ for(const day of Object.keys(data)){
+  const el=document.getElementById(day+"-pending");if(!el)continue;
+  const x=p[0];
+  if(!x){el.style.display="none";continue}
+  el.style.display="block";
+  el.innerHTML=`⚠️ <strong>Pending workout:</strong> ${data[x.type].title} was scheduled for ${liftFmt(x.date)}.
+   <button style="margin-left:7px;border:1px solid #6b3d47;background:#2a1b20;color:#fff;border-radius:9px;padding:7px 9px;font-weight:800" onclick="show('${x.type}')">Do it today →</button>`;
+ }
+}
+
+async function liftRenderProgress(){
+ const el=document.getElementById("progress"),sessions=await liftAll("sessions"),sets=await liftAll("sets"),month=liftToday().slice(0,7);
+ const thisMonth=sessions.filter(x=>x.completedDate.startsWith(month)).length;
+ const by={push:0,pull:0,legs:0,arms:0};sessions.forEach(x=>by[x.type]=(by[x.type]||0)+1);
+ const names=[...new Map(sets.map(x=>[x.exerciseId,x.exerciseName])).values()];
+ el.innerHTML=`<div class="v2page"><h2>Progress</h2><div class="v2sub">Persistent workout history and exercise progression.</div>
+ <div class="v2stats"><div class="v2stat"><b>${sessions.length}</b><span>Total workouts</span></div><div class="v2stat"><b>${thisMonth}</b><span>This month</span></div><div class="v2stat"><b>${await liftStreak()}</b><span>Current streak</span></div><div class="v2stat"><b>${await liftStreak(true)}</b><span>Longest streak</span></div></div>
+ <div class="v2panel"><h3>Workout mix</h3>${["push","pull","legs","arms"].map(k=>`<div class="v2row"><div><b>${data[k].title}</b><span>${by[k]} completed</span></div><b style="color:${k==="push"?"#5fb8ff":k==="pull"?"#66d9a5":k==="legs"?"#ffad5c":"#b18cff"}">●</b></div>`).join("")}</div>
+ <div class="v2panel"><h3>Exercise progress</h3>${names.length?names.map(n=>`<button class="v2exercise" onclick="liftOpenExercise('${encodeURIComponent(n)}')"><b>${n}</b><div>Tap to view weight · reps · RIR history →</div></button>`).join(""):'<div class="v2sub">Complete a workout with logged sets to build history.</div>'}</div>
+ <div class="v2panel"><h3>Recent workouts</h3>${sessions.sort((a,b)=>b.completedDate.localeCompare(a.completedDate)).slice(0,12).map(x=>`<div class="v2row"><div><b>${data[x.type].title}</b><span>${liftFmt(x.completedDate)} · ${x.setCount} logged sets${x.scheduledDate!==x.completedDate?" · originally scheduled "+liftFmt(x.scheduledDate):""}</span></div><b>✓</b></div>`).join("")||'<div class="v2sub">No completed workouts yet.</div>'}</div></div>`;
+}
+
+async function liftStreak(longest=false){
+ const s=await liftAll("sessions"),ds=[...new Set(s.map(x=>x.completedDate))].sort();
+ if(!ds.length)return 0;let best=1,run=1;
+ for(let i=1;i<ds.length;i++){const diff=(new Date(ds[i])-new Date(ds[i-1]))/86400000;if(diff===1)run++;else run=1;best=Math.max(best,run)}
+ if(longest)return best;
+ let n=0,prev=null;for(const d of ds.slice().reverse()){if(!prev){n=1;prev=d}else{const diff=(new Date(prev)-new Date(d))/86400000;if(diff===1){n++;prev=d}else break}}return n;
+}
+
+async function liftRenderCalendar(){
+ const el=document.getElementById("calendar"),sessions=await liftAll("sessions"),y=liftCalendarMonth.getFullYear(),m=liftCalendarMonth.getMonth(),by={};
+ sessions.forEach(x=>by[x.completedDate]=x);
+ const first=new Date(y,m,1),offset=(first.getDay()+6)%7,last=new Date(y,m+1,0).getDate();let cells="";
+ for(let i=0;i<offset;i++)cells+="<div></div>";
+ for(let d=1;d<=last;d++){const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,x=by[date];cells+=`<button class="v2day ${x?x.type:""} ${date===liftToday()?"today":""}" ${x?`onclick="liftOpenSession('${x.id}')"`:""}>${d}</button>`}
+ el.innerHTML=`<div class="v2page"><h2>Calendar</h2><div class="v2sub">Completed workout days, color-coded by workout type.</div>
+ <div class="v2panel"><div class="v2calendar-head"><button class="v2monthbtn" onclick="liftChangeMonth(-1)">‹</button><div class="v2month">${liftCalendarMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</div><button class="v2monthbtn" onclick="liftChangeMonth(1)">›</button></div>
+ <div class="v2dow">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="v2heat">${cells}</div>
+ <div class="v2legend"><span><i class="v2key" style="background:#5fb8ff"></i>Push</span><span><i class="v2key" style="background:#66d9a5"></i>Pull</span><span><i class="v2key" style="background:#ffad5c"></i>Legs</span><span><i class="v2key" style="background:#b18cff"></i>Arms + Core</span></div></div></div>`;
+}
+function liftChangeMonth(n){liftCalendarMonth.setMonth(liftCalendarMonth.getMonth()+n);liftRenderCalendar()}
+
+async function liftOpenSession(id){
+ const s=(await liftAll("sessions")).find(x=>x.id===id),sets=(await liftAll("sets")).filter(x=>x.sessionId===id);
+ document.getElementById("v2sheet").innerHTML=`<h2 style="margin:0 0 5px">${data[s.type].title}</h2><p style="font-size:12px;color:var(--muted)">${liftFmt(s.completedDate)} · ${s.setCount} logged sets${s.scheduledDate!==s.completedDate?" · missed "+liftFmt(s.scheduledDate):""}</p>
+ ${[...new Map(sets.map(x=>[x.exerciseId,x.exerciseName])).entries()].map(([id,n])=>{const rs=sets.filter(x=>x.exerciseId===id);return `<div class="v2exercise"><b>${n}</b><div>${rs.map(x=>`${x.weight||"—"}kg × ${x.reps||"—"} @ ${x.rir||"—"} RIR`).join(" · ")}</div></div>`}).join("")}
+ <button class="v2btn v2primary" style="width:100%;margin-top:10px" onclick="liftCloseModal()">Close</button>`;
+ document.getElementById("v2modal").style.display="flex";
+}
+async function liftOpenExercise(enc){
+ const name=decodeURIComponent(enc),sets=(await liftAll("sets")).filter(x=>x.exerciseName===name).sort((a,b)=>b.date.localeCompare(a.date)||a.set-b.set);
+ document.getElementById("v2sheet").innerHTML=`<h2 style="margin:0 0 5px">${name}</h2><p style="font-size:12px;color:var(--muted)">Historical performance</p>
+ ${[...new Set(sets.map(x=>x.date))].map(d=>`<div class="v2exercise"><b>${liftFmt(d)}</b><div>${sets.filter(x=>x.date===d).map(x=>`${x.weight||"—"}kg × ${x.reps||"—"} @ ${x.rir||"—"} RIR`).join(" · ")}</div></div>`).join("")}
+ <button class="v2btn v2primary" style="width:100%;margin-top:10px" onclick="liftCloseModal()">Close</button>`;
+ document.getElementById("v2modal").style.display="flex";
+}
+function liftCloseModal(){document.getElementById("v2modal").style.display="none"}
+
+async function liftRenderData(){
+ document.getElementById("data").innerHTML=`<div class="v2page"><h2>Data</h2><div class="v2sub">Your history stays on this device unless you export it.</div>
+ <div class="v2panel"><h3>Backup</h3><div class="v2sub">Export a complete JSON backup of sessions and sets.</div><button class="v2btn v2primary" onclick="liftExport()">📤 Export workout data</button> <button class="v2btn" onclick="document.getElementById('liftImportFile').click()">📥 Import backup</button><input id="liftImportFile" type="file" accept=".json,application/json" hidden onchange="liftImport(event)"></div>
+ <div class="v2panel"><h3>Privacy</h3><div class="v2sub">Workout history is stored locally in IndexedDB. GitHub Pages serves the app files but does not receive your workout logs.</div></div>
+ <div class="v2panel"><h3>Offline</h3><div class="v2sub">The PWA service worker caches the app files when served over HTTPS. Workout history is stored locally and can be recorded offline.</div></div></div>`;
+}
+async function liftExport(){
+ const p={app:"Lift",version:2,exportedAt:new Date().toISOString(),sessions:await liftAll("sessions"),sets:await liftAll("sets")};
+ const a=document.createElement("a"),u=URL.createObjectURL(new Blob([JSON.stringify(p,null,2)],{type:"application/json"}));a.href=u;a.download=`lift-backup-${liftToday()}.json`;a.click();URL.revokeObjectURL(u);
+}
+async function liftImport(e){
+ try{const p=JSON.parse(await e.target.files[0].text());if(!Array.isArray(p.sessions)||!Array.isArray(p.sets))throw 0;if(!confirm("Import this Lift backup?"))return;for(const x of p.sessions)await liftPut("sessions",x);for(const x of p.sets)await liftPut("sets",x);alert("Backup imported ✓");await liftRefresh()}catch{alert("Invalid Lift backup file.")}}
+async function liftRefresh(){
+ await liftRenderPending();await liftRenderProgress();await liftRenderCalendar();await liftRenderData();await liftRefreshSuggestions();
+}
+
+async function liftShowPage(page){
+ document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+ document.getElementById(page).classList.add("active");
+ document.querySelectorAll(".bottom button").forEach(x=>x.classList.toggle("active",x.dataset.bottom===page));
+ if(page==="progress")await liftRenderProgress();if(page==="calendar")await liftRenderCalendar();if(page==="data")await liftRenderData();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* Override bottom navigation from the original app. */
+document.querySelectorAll("[data-bottom]").forEach(b=>b.onclick=()=>{
+ const p=b.dataset.bottom;
+ if(p==="progress"||p==="calendar"||p==="data")liftShowPage(p);
+ else show("push");
+});
+
+(async()=>{
+ await liftOpenDB();
+ await liftRefresh();
+})();
 </script>
 </body>
 </html>
