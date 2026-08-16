@@ -1,0 +1,9 @@
+{
+  "name": "Lift \u2014 4 Day Workout",
+  "short_name": "Lift",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#090b0f",
+  "theme_color": "#090b0f",
+  "description": "Swipeable 4-day hypertrophy and strength workout tracker."
+}
