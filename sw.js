@@ -1,5 +1,36 @@
-const CACHE="lift-v5";
-const ASSETS=["./","./index.html","./manifest.webmanifest"];
-self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(a=>Promise.all(a.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{const x=r.clone();caches.open(CACHE).then(q=>q.put(e.request,x));return r}).catch(()=>c)))});
+const CACHE = "lift-v6";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
+self.addEventListener("install", (e) =>
+  e.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(ASSETS))
+      .then(() => self.skipWaiting()),
+  ),
+);
+self.addEventListener("activate", (e) =>
+  e.waitUntil(
+    caches
+      .keys()
+      .then((a) =>
+        Promise.all(a.filter((k) => k !== CACHE).map((k) => caches.delete(k))),
+      )
+      .then(() => self.clients.claim()),
+  ),
+);
+self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
+  e.respondWith(
+    caches.match(e.request).then(
+      (c) =>
+        c ||
+        fetch(e.request)
+          .then((r) => {
+            const x = r.clone();
+            caches.open(CACHE).then((q) => q.put(e.request, x));
+            return r;
+          })
+          .catch(() => c),
+    ),
+  );
+});

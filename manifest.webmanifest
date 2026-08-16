@@ -1,9 +1,31 @@
 {
-  "name":"Lift — Training Tracker",
-  "short_name":"Lift",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#090b0f",
-  "theme_color":"#090b0f",
-  "description":"Offline-first 4-day workout tracker with progress, calendar and backup."
+  "name": "Lift — Training Tracker",
+  "short_name": "Lift",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#090b0f",
+  "theme_color": "#090b0f",
+  "description": "Offline-first 4-day workout tracker with progress and calendar.",
+  "icons": [
+    {
+      "src": "./icon_pack/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_pack/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_pack/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_pack/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
 }
